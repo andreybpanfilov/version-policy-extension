@@ -20,6 +20,7 @@
 
 package tel.panfilov.maven.extensions.vp.cmd;
 
+import org.codehaus.plexus.util.StringUtils;
 import org.semver4j.Semver;
 
 import java.util.regex.Matcher;
@@ -33,7 +34,7 @@ public abstract class AbstractVersionCommand implements VersionCommand {
 
     @Override
     public boolean matches(String cmd) {
-        return getPattern().matcher(cmd).matches();
+        return !StringUtils.isEmpty(cmd) && getPattern().matcher(cmd).matches();
     }
 
     @Override
