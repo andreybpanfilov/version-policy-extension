@@ -1,0 +1,1 @@
+## Version policy extension for maven-release-plugin
