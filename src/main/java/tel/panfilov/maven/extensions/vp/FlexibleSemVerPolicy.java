@@ -57,7 +57,7 @@ public class FlexibleSemVerPolicy implements VersionPolicy {
                 .filter(c -> c.matches(cmd))
                 .findFirst()
                 .map(c -> c.apply(cmd, version))
-                .orElseGet(version::withIncPatch);
+                .orElse(version);
     }
 
     @Override

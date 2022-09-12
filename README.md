@@ -22,13 +22,16 @@ after enabling version policy extension:
         <dependency>
             <groupId>tel.panfilov.maven</groupId>
             <artifactId>version-policy-extension</artifactId>
-            <version>0.1.1</version>
+            <version>0.1.2</version>
         </dependency>
     </dependencies>
 </plugin>
 ```
 
 ```shell
+% mvn release:clean release:prepare
+What is the release version for "version-policy-extension"? (version-policy-extension) 0.1.2: : 
+
 % FSVP=INC_MAJOR mvn release:clean release:prepare
 What is the release version for "version-policy-extension"? (version-policy-extension) 1.0.0: : 
 
