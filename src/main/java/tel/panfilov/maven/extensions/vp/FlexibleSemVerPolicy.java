@@ -52,7 +52,7 @@ public class FlexibleSemVerPolicy implements VersionPolicy {
     protected Semver getReleaseVersion(String requestVersion) {
         Semver version = new Semver(requestVersion)
                 .withClearedPreReleaseAndBuild();
-        String cmd = getNextVersionCommand();
+        String cmd = getNextVersionCommand("R");
         return commands.stream()
                 .filter(c -> c.matches(cmd))
                 .findFirst()
@@ -65,20 +65,27 @@ public class FlexibleSemVerPolicy implements VersionPolicy {
         Semver version = new Semver(request.getVersion());
         List<String> preRelease = version.getPreRelease();
         List<String> build = version.getBuild();
-        if (preRelease.isEmpty() && build.isEmpty()) {
-            version = version.withIncPatch();
+        Semver dev;
+        if (preRelease.isEmpty() && build.isEmpty() || preRelease.contains("SNAPSHOT")) {
+            String cmd = getNextVersionCommand("D");
+            dev = commands.stream()
+                    .filter(c -> c.matches(cmd))
+                    .findFirst()
+                    .map(c -> c.apply(cmd, version))
+                    .orElse(version.withIncPatch());
         } else {
-            version = version.withClearedPreReleaseAndBuild();
+            dev = version.withClearedPreReleaseAndBuild();
         }
-        version = version.withPreRelease("SNAPSHOT");
-        return new VersionPolicyResult().setVersion(version.getVersion());
+        dev = dev.withPreRelease("SNAPSHOT");
+        return new VersionPolicyResult().setVersion(dev.getVersion());
     }
 
-    protected String getNextVersionCommand() {
+    protected String getNextVersionCommand(String suffix) {
         Properties properties = session.getUserProperties();
-        String cmd = properties.getProperty("fsvp");
+        String property = "fsvp" + suffix.toLowerCase();
+        String cmd = properties.getProperty(property);
         if (cmd == null) {
-            cmd = System.getenv("FSVP");
+            cmd = System.getenv(property.toUpperCase());
         }
         return cmd;
     }
